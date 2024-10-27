@@ -104,6 +104,7 @@ use pocketmine\world\particle\Particle;
 use pocketmine\world\sound\BlockPlaceSound;
 use pocketmine\world\sound\Sound;
 use pocketmine\world\utils\SubChunkExplorer;
+use pocketmine\world\weather\WeatherManager;
 use pocketmine\YmlServerProperties;
 use function abs;
 use function array_filter;
@@ -369,6 +370,8 @@ class World implements ChunkManager{
 	private ?SkyLightUpdate $skyLightUpdate = null;
 
 	private \Logger $logger;
+	
+	private WeatherManager $weatherManager;
 
 	/**
 	 * @phpstan-return ChunkPosHash
@@ -537,6 +540,8 @@ class World implements ChunkManager{
 		$this->addOnUnloadCallback(static function() use ($workerPool, $workerStartHook) : void{
 			$workerPool->removeWorkerStartHook($workerStartHook);
 		});
+
+		$this->weatherManager = new WeatherManager($this);
 	}
 
 	private function initRandomTickBlocksFromConfig(ServerConfigGroup $cfg) : void{
@@ -3513,5 +3518,9 @@ class World implements ChunkManager{
 				}
 			}
 		}
+	}
+	
+	public function getWeatherManager() : WeatherManager{
+	    return $this->weatherManager;
 	}
 }
