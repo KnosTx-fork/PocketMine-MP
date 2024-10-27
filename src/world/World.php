@@ -370,7 +370,7 @@ class World implements ChunkManager{
 	private ?SkyLightUpdate $skyLightUpdate = null;
 
 	private \Logger $logger;
-	
+
 	private WeatherManager $weatherManager;
 
 	/**
@@ -3521,6 +3521,6 @@ class World implements ChunkManager{
 	}
 	
 	public function getWeatherManager() : WeatherManager{
-	    return $this->weatherManager;
+		return $this->weatherManager;
 	}
 }
