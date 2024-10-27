@@ -301,6 +301,9 @@ class Server{
 	 * @phpstan-var array<string, array<int, CommandSender>>
 	 */
 	private array $broadcastSubscribers = [];
+	
+	private int $weatherDuration;
+	private string $currentWeather;
 
 	public function getName() : string{
 		return VersionInfo::NAME;
@@ -1068,6 +1071,9 @@ class Server{
 		}catch(\Throwable $e){
 			$this->exceptionHandler($e);
 		}
+
+		$this->currentWeather = "clear";
+		$this->setWeatherDuration();
 	}
 
 	private function startupPrepareWorlds() : bool{
@@ -1876,5 +1882,37 @@ class Server{
 		}else{
 			$this->nextTick += self::TARGET_SECONDS_PER_TICK;
 		}
+
+		if($this->tickCounter >=20){
+		  $this->tickCounter = 0;
+		  $this->weatherDuration--;
+
+		  if($this->weatherDuration <= 0){
+		    $this->toggleWeather();
+		    $this->setWeatherDuration();
+		  }
+		  foreach ($this->worldManager()->getWorlds() as $world){
+		    $worldManager = $world->getWeatherManager();
+		    if ($this->currentWeather === "clear"){
+		      $weatherManager->setClear;
+		    } elseif ($this->currentWeather === "rain"){
+		      $weatherManager->setRain;
+		    } elseif ($this->currentWeather === "thunder"){
+		      $weatherManager->setThunder;
+		    }
+		  }
+		}
+	}
+	
+	private function setWeatherDuration() : void {
+	  $this->weatherDuration = mt_rand(10 * 60, 150 * 60);
+	}
+
+	private function toggleWeather() : void {
+	  if ($this->currentWeather === "clear"){
+	    $this->currentWeather = mt_rand(0, 1) === 0 ? "rain" : "thunder";
+	  } else {
+	    $this->currentWeather = "clear";
+	  }
 	}
 }
