@@ -23,12 +23,14 @@ declare(strict_types=1);
 
 namespace pocketmine\world\weather;
 
+use pocketmine\world\World;
+
 class WeatherManager {
-
 	private string $currentWeather = "clear";
+	private World $world;
 
-	public function __construct() {
-		//NOOP
+	public function __construct(World $world) {
+		$this->world = $world;
 	}
 
 	public function setClear() : void {
