@@ -21,14 +21,15 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\command;
+namespace pocketmine\command\defaults;
 
+use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\player\Player;
 use pocketmine\utils\TextFormat;
 use function count;
 use function strtolower;
 
-class WeatherCommand extends Command {
+class WeatherCommand extends VanillaCommand {
 
 	public function __construct() {
 		parent::__construct("weather",
@@ -49,7 +50,7 @@ class WeatherCommand extends Command {
 		}
 
 		if (!$sender instanceof Player) {
-			$sender->sendMessage(TextFormat::RED . "Hanya pemain yang bisa menggunakan perintah ini.");
+			$sender->sendMessage(TextFormat::RED . "Only players can uses this command.");
 			return false;
 		}
 
@@ -59,24 +60,23 @@ class WeatherCommand extends Command {
 		switch (strtolower($args[0])) {
 			case "clear":
 				$weatherManager->setClear();
-				$sender->sendMessage(TextFormat::GREEN . "Cuaca diubah menjadi cerah.");
+				$sender->sendMessage(TextFormat::GREEN . "Weather changed to clear.");
 				break;
 
 			case "rain":
 				$weatherManager->setRain();
-				$sender->sendMessage(TextFormat::GREEN . "Cuaca diubah menjadi hujan.");
+				$sender->sendMessage(TextFormat::GREEN . "Weather changed to rain.");
 				break;
 
 			case "thunder":
 				$weatherManager->setThunder();
-				$sender->sendMessage(TextFormat::GREEN . "Cuaca diubah menjadi badai petir.");
+				$sender->sendMessage(TextFormat::GREEN . "Weather changed to thunder.");
 				break;
 
 			default:
-				$sender->sendMessage(TextFormat::RED . "Jenis cuaca tidak valid! Gunakan: clear, rain, atau thunder.");
+				$sender->sendMessage(TextFormat::RED . "Type invalid, Usage /weather <clear|rain|thunder> [duration]");
 				return false;
 		}
-
 		return true;
 	}
 }
