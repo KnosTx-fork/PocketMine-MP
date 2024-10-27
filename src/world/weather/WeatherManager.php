@@ -27,6 +27,10 @@ class WeatherManager {
 
 	private string $currentWeather = "clear";
 
+	public function __construct() {
+		//NOOP
+	}
+
 	public function setClear() : void {
 		$this->currentWeather = "clear";
 	}
