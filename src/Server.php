@@ -1895,16 +1895,17 @@ class Server{
 			}
 			foreach($this->getWorldManager()->getWorlds as $world){
 				$weatherManager = $world->getWeatherManager();
-            switch ($this->currentWeather) {
-                case Weather::CLEAR:
-                    $weatherManager->setClear();
+				switch ($this->currentWeather){
+					case WeatherType::CLEAR:
+					$weatherManager->setClear();
                     break;
-                case Weather::RAIN:
-                    $weatherManager->setRain();
-                    break;
-                case Weather::THUNDER:
-                    $weatherManager->setThunder();
-                    break;
+					case WeatherType::RAIN:
+					$weatherManager->setRain();
+					break;
+					case WeatherType::THUNDER:
+					$weatherManager->setThunder();
+					break;
+				}
 			}
 		}
 	}
