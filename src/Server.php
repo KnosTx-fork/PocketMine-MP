@@ -119,6 +119,7 @@ use pocketmine\world\Position;
 use pocketmine\world\World;
 use pocketmine\world\WorldCreationOptions;
 use pocketmine\world\WorldManager;
+use pocketmine\world\weather\WeatherType;
 use pocketmine\YmlServerProperties as Yml;
 use Ramsey\Uuid\UuidInterface;
 use Symfony\Component\Filesystem\Path;
@@ -304,7 +305,7 @@ class Server{
 	private array $broadcastSubscribers = [];
 
 	private int $weatherDuration = 0;
-	private string $currentWeather;
+	private WeatherType $currentWeather;
 
 	public function getName() : string{
 		return VersionInfo::NAME;
@@ -1073,7 +1074,7 @@ class Server{
 			$this->exceptionHandler($e);
 		}
 
-		$this->currentWeather = "clear";
+		$this->currentWeather = WeatherType::CLEAR;
 		$this->setWeatherDuration();
 	}
 
@@ -1894,11 +1895,11 @@ class Server{
 		  }
 		  foreach ($this->getWorldManager()->getWorlds() as $world){
 			$weatherManager = $world->getWeatherManager();
-			if ($this->currentWeather === "clear"){
+			if ($this->currentWeather === WeatherType::CLEAR){
 			  $weatherManager->setClear();
-			} elseif ($this->currentWeather === "rain"){
+			} elseif ($this->currentWeather === WeatherType::RAIN){
 			  $weatherManager->setRain();
-			} elseif ($this->currentWeather === "thunder"){
+			} elseif ($this->currentWeather === WeatherType::THUNDER){
 			  $weatherManager->setThunder();
 			}
 		  }
@@ -1910,10 +1911,10 @@ class Server{
 	}
 
 	private function toggleWeather() : void {
-	  if ($this->currentWeather === "clear"){
+	  if ($this->currentWeather === WeatherType::CLEAR){
 		$this->currentWeather = mt_rand(0, 1) === 0 ? "rain" : "thunder";
 	  } else {
-		$this->currentWeather = "clear";
+		$this->currentWeather = WeatherType::CLEAR;
 	  }
 	}
 }
