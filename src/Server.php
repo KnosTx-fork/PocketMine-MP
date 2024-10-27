@@ -1892,7 +1892,7 @@ class Server{
 			$this->toggleWeather();
 			$this->setWeatherDuration();
 		  }
-		  foreach ($this->getWorldManager()->getWorlds(); as $world){
+		  foreach ($this->getWorldManager()->getWorlds() as $world){
 			$weatherManager = $world->getWeatherManager();
 			if ($this->currentWeather === "clear"){
 			  $weatherManager->setClear();
