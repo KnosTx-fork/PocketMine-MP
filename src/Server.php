@@ -1073,9 +1073,6 @@ class Server{
 		}catch(\Throwable $e){
 			$this->exceptionHandler($e);
 		}
-
-		$this->currentWeather = WeatherType::CLEAR;
-		$this->setWeatherDuration();
 	}
 
 	private function startupPrepareWorlds() : bool{
@@ -1885,19 +1882,19 @@ class Server{
 			$this->nextTick += self::TARGET_SECONDS_PER_TICK;
 		}
 
+		if ($this->currentWeather === null){
+			$this->currentWeather = WeatherType::CLEAR;
+			$this->setWeatherDuration();
+		}
 		if ($this->tickCounter >= 20){
 			$this->tickCounter = 0;
 			$this->weatherDuration--;
 
-			if($this->currentWeather === null){
-				$this->currentWeather = WeatherType::CLEAR;
-			}
-
-			if($this->weatherDuration <= 0){
+			if ($this->weatherDuration <= 0){
 				$this->toggleWeather();
 				$this->setWeatherDuration();
 			}
-			foreach($this->getWorldManager()->getWorlds() as $world){
+			foreach ($this->getWorldManager()->getWorlds() as $world){
 				$weatherManager = $world->getWeatherManager();
 				switch ($this->currentWeather){
 					case WeatherType::CLEAR:
@@ -1919,7 +1916,7 @@ class Server{
 	}
 
 	private function toggleWeather() : void{
-		$this->currentWeather = match($this->currentWeather){
+		$this->currentWeather = match ($this->currentWeather){
 			WeatherType::CLEAR => mt_rand(0, 1) == 0 ? WeatherType::RAIN : WeatherType::THUNDER,
 			default => WeatherType::CLEAR,
 		};
