@@ -781,6 +781,8 @@ class Server{
 		$this->startTime = microtime(true);
 		$this->tickAverage = array_fill(0, self::TARGET_TICKS_PER_SECOND, self::TARGET_TICKS_PER_SECOND);
 		$this->useAverage = array_fill(0, self::TARGET_TICKS_PER_SECOND, 0);
+		$this->currentWeather = WeatherType::CLEAR;
+		$this->setWeatherDuration();
 
 		Timings::init();
 		$this->tickSleeper = new TimeTrackingSleeperHandler(Timings::$serverInterrupts);
