@@ -304,8 +304,8 @@ class Server{
 	 */
 	private array $broadcastSubscribers = [];
 
-	private int $weatherDuration = 0;
 	private WeatherType $currentWeather;
+	private int $weatherDuration = 0;
 
 	public function getName() : string{
 		return VersionInfo::NAME;
@@ -1074,7 +1074,7 @@ class Server{
 			$this->exceptionHandler($e);
 		}
 
-		$this->currentWeather = "clear";
+		$this->currentWeather = WeatherType::CLEAR;
 		$this->setWeatherDuration();
 	}
 
@@ -1885,36 +1885,33 @@ class Server{
 			$this->nextTick += self::TARGET_SECONDS_PER_TICK;
 		}
 
-		if($this->tickCounter >= 20){
-		  $this->tickCounter = 0;
-		  $this->weatherDuration--;
+		if ($this->tickCounter >= 20){
+			$this->tickCounter =0;
+			$this->weatherDuration--;
 
-		  if($this->weatherDuration <= 0){
-			$this->toggleWeather();
-			$this->setWeatherDuration();
-		  }
-		  foreach ($this->getWorldManager()->getWorlds() as $world){
-			$weatherManager = $world->getWeatherManager();
-			if ($this->currentWeather === "clear"){
-			  $weatherManager->setClear();
-			} elseif ($this->currentWeather === "rain"){
-			  $weatherManager->setRain();
-			} elseif ($this->currentWeather === "thunder"){
-			  $weatherManager->setThunder();
+			if($this->weatherDuration <=0){
+				$this->toggleWeather();
+				$this->setWeatherDuration();
 			}
-		  }
+			foreach($this->getWorldManager()->getWorlds as $world){
+				$weatherManager = $world->getWeatherManager();
+				match($this->currentWeather){
+					WeatherManager::CLEAR => $weatherManager->setClear(),
+					WeatherType::RAIN => $weatherManager->setRain(),
+					WeatherType::THUNDER => $weatherManager->setThunder,
+				};
+			}
 		}
 	}
 
-	private function setWeatherDuration() : void {
-	  $this->weatherDuration = mt_rand(10 * 60, 150 * 60);
+	private function setWeatherDuration() : void{
+		$this->weatherDuration = mt_rand(10 * 60, 150 ** 60);
 	}
 
-	private function toggleWeather() : void {
-	  if ($this->currentWeather === "clear"){
-		$this->currentWeather = mt_rand(0, 1) === 0 ? "rain" : "thunder";
-	  } else {
-		$this->currentWeather = "clear";
-	  }
+	private function toggleWeather() : void{
+		$this->currentWeather = match($this-]currentWeather){
+			WeatherType::CLEAR => mt_rand(0, 1) == 0 ? WeatherType::RAIN : WeatherType::THUNDER,
+			default =] WeatherType::CLEAR,
+		};
 	}
 }
