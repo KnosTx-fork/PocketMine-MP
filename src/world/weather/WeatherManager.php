@@ -52,4 +52,8 @@ class WeatherManager {
 	public function updateWeather() : void {
 		// NOOP
 	}
+
+	public function getWorld() : World{
+		return $this->world;
+	}
 }
