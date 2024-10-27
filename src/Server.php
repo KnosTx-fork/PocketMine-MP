@@ -305,6 +305,7 @@ class Server{
 	private array $broadcastSubscribers = [];
 
 	private int $weatherDuration = 0;
+	private string $currentWeather;
 
 	public function getName() : string{
 		return VersionInfo::NAME;
@@ -770,7 +771,6 @@ class Server{
 	public function __construct(
 		private ThreadSafeClassLoader $autoloader,
 		private AttachableThreadSafeLogger $logger,
-		private WeatherType $currentWeather,
 		string $dataPath,
 		string $pluginPath
 	){
@@ -1893,7 +1893,7 @@ class Server{
 				$this->toggleWeather();
 				$this->setWeatherDuration();
 			}
-			foreach($this->getWorldManager()->getWorlds as $world){
+			foreach($this->getWorldManager()->getWorlds() as $world){
 				$weatherManager = $world->getWeatherManager();
 				switch ($this->currentWeather){
 					case WeatherType::CLEAR:
