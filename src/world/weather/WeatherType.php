@@ -23,8 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\world\weather;
 
-class WeatherType {
-	public const CLEAR = "clear";
-	public const RAIN = "rain";
-	public const THUNDER = "thunder";
+enum WeatherType: string {
+	case CLEAR = "clear";
+	case RAIN = "rain";
+	case THUNDER = "thunder";
 }
