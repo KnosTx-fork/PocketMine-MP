@@ -148,6 +148,7 @@ use function max;
 use function microtime;
 use function min;
 use function mkdir;
+use function mt_rand;
 use function ob_end_flush;
 use function preg_replace;
 use function realpath;
@@ -301,7 +302,7 @@ class Server{
 	 * @phpstan-var array<string, array<int, CommandSender>>
 	 */
 	private array $broadcastSubscribers = [];
-	
+
 	private int $weatherDuration;
 	private string $currentWeather;
 
@@ -1883,36 +1884,36 @@ class Server{
 			$this->nextTick += self::TARGET_SECONDS_PER_TICK;
 		}
 
-		if($this->tickCounter >=20){
+		if($this->tickCounter >= 20){
 		  $this->tickCounter = 0;
 		  $this->weatherDuration--;
 
 		  if($this->weatherDuration <= 0){
-		    $this->toggleWeather();
-		    $this->setWeatherDuration();
+			$this->toggleWeather();
+			$this->setWeatherDuration();
 		  }
 		  foreach ($this->worldManager()->getWorlds() as $world){
-		    $worldManager = $world->getWeatherManager();
-		    if ($this->currentWeather === "clear"){
-		      $weatherManager->setClear;
-		    } elseif ($this->currentWeather === "rain"){
-		      $weatherManager->setRain;
-		    } elseif ($this->currentWeather === "thunder"){
-		      $weatherManager->setThunder;
-		    }
+			$worldManager = $world->getWeatherManager();
+			if ($this->currentWeather === "clear"){
+			  $weatherManager->setClear;
+			} elseif ($this->currentWeather === "rain"){
+			  $weatherManager->setRain;
+			} elseif ($this->currentWeather === "thunder"){
+			  $weatherManager->setThunder;
+			}
 		  }
 		}
 	}
-	
+
 	private function setWeatherDuration() : void {
 	  $this->weatherDuration = mt_rand(10 * 60, 150 * 60);
 	}
 
 	private function toggleWeather() : void {
 	  if ($this->currentWeather === "clear"){
-	    $this->currentWeather = mt_rand(0, 1) === 0 ? "rain" : "thunder";
+		$this->currentWeather = mt_rand(0, 1) === 0 ? "rain" : "thunder";
 	  } else {
-	    $this->currentWeather = "clear";
+		$this->currentWeather = "clear";
 	  }
 	}
 }
