@@ -303,7 +303,7 @@ class Server{
 	 */
 	private array $broadcastSubscribers = [];
 
-	private int $weatherDuration;
+	private int $weatherDuration = 0;
 	private string $currentWeather;
 
 	public function getName() : string{
