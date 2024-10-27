@@ -1889,6 +1889,10 @@ class Server{
 			$this->tickCounter = 0;
 			$this->weatherDuration--;
 
+			if($this->currentWeather === null){
+				$this->currentWeather = WeatherType::CLEAR;
+			}
+
 			if($this->weatherDuration <= 0){
 				$this->toggleWeather();
 				$this->setWeatherDuration();
