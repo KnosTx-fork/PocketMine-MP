@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\world\weather;
 
-enum WeatherType: string {
+enum WeatherType : string {
 	case CLEAR = "clear";
 	case RAIN = "rain";
 	case THUNDER = "thunder";
