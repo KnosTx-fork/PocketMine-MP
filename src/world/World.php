@@ -3519,7 +3519,7 @@ class World implements ChunkManager{
 			}
 		}
 	}
-	
+
 	public function getWeatherManager() : WeatherManager{
 		return $this->weatherManager;
 	}
