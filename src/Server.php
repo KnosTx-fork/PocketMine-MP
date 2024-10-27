@@ -305,7 +305,7 @@ class Server{
 	private array $broadcastSubscribers = [];
 
 	private int $weatherDuration = 0;
-	private string $currentWeather;
+	private WeatherType $currentWeather;
 
 	public function getName() : string{
 		return VersionInfo::NAME;
