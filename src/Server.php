@@ -1886,10 +1886,10 @@ class Server{
 		}
 
 		if ($this->tickCounter >= 20){
-			$this->tickCounter =0;
+			$this->tickCounter = 0;
 			$this->weatherDuration--;
 
-			if($this->weatherDuration <=0){
+			if($this->weatherDuration <= 0){
 				$this->toggleWeather();
 				$this->setWeatherDuration();
 			}
@@ -1909,9 +1909,9 @@ class Server{
 	}
 
 	private function toggleWeather() : void{
-		$this->currentWeather = match($this-]currentWeather){
+		$this->currentWeather = match($this->currentWeather){
 			WeatherType::CLEAR => mt_rand(0, 1) == 0 ? WeatherType::RAIN : WeatherType::THUNDER,
-			default =] WeatherType::CLEAR,
+			default => WeatherType::CLEAR,
 		};
 	}
 }
