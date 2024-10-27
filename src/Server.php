@@ -897,7 +897,7 @@ class Server{
 			}
 
 			$this->asyncPool = new AsyncPool($poolSize, max(-1, $this->configGroup->getPropertyInt(Yml::MEMORY_ASYNC_WORKER_HARD_LIMIT, 256)), $this->autoloader, $this->logger, $this->tickSleeper);
-			
+
 			$netCompressionThreshold = -1;
 			if($this->configGroup->getPropertyInt(Yml::NETWORK_BATCH_THRESHOLD, 256) >= 0){
 				$netCompressionThreshold = $this->configGroup->getPropertyInt(Yml::NETWORK_BATCH_THRESHOLD, 256);
@@ -1017,9 +1017,6 @@ class Server{
 
 			$this->playerDataProvider = new DatFilePlayerDataProvider(Path::join($this->dataPath, "players"));
 
-			$this->currentWeather = WeatherType::CLEAR;
-			$this->setWeatherDuration();
-
 			register_shutdown_function($this->crashDump(...));
 
 			$loadErrorCount = 0;
@@ -1070,6 +1067,9 @@ class Server{
 			if($this->configGroup->getPropertyBool(Yml::CONSOLE_ENABLE_INPUT, true)){
 				$this->console = new ConsoleReaderChildProcessDaemon($this->logger);
 			}
+
+			$this->currentWeather = WeatherType::CLEAR;
+			$this->setWeatherDuration();
 
 			$this->tickProcessor();
 			$this->forceShutdown();
