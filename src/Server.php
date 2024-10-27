@@ -304,7 +304,6 @@ class Server{
 	 */
 	private array $broadcastSubscribers = [];
 
-	private WeatherType $currentWeather;
 	private int $weatherDuration = 0;
 
 	public function getName() : string{
@@ -771,6 +770,7 @@ class Server{
 	public function __construct(
 		private ThreadSafeClassLoader $autoloader,
 		private AttachableThreadSafeLogger $logger,
+		private WeatherType $currentWeather,
 		string $dataPath,
 		string $pluginPath
 	){
@@ -1898,7 +1898,7 @@ class Server{
 				switch ($this->currentWeather){
 					case WeatherType::CLEAR:
 					$weatherManager->setClear();
-                    break;
+					break;
 					case WeatherType::RAIN:
 					$weatherManager->setRain();
 					break;
@@ -1911,7 +1911,7 @@ class Server{
 	}
 
 	private function setWeatherDuration() : void{
-		$this->weatherDuration = mt_rand(10 * 60, 150 ** 60);
+		$this->weatherDuration = mt_rand(10 * 60, 150 * 60);
 	}
 
 	private function toggleWeather() : void{
