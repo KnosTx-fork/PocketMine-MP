@@ -1884,10 +1884,6 @@ class Server{
 			$this->nextTick += self::TARGET_SECONDS_PER_TICK;
 		}
 
-		if ($this->currentWeather === null){
-			$this->currentWeather = WeatherType::CLEAR;
-			$this->setWeatherDuration();
-		}
 		if ($this->tickCounter >= 20){
 			$this->tickCounter = 0;
 			$this->weatherDuration--;
