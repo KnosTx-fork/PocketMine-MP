@@ -1893,13 +1893,13 @@ class Server{
 			$this->setWeatherDuration();
 		  }
 		  foreach ($this->worldManager()->getWorlds() as $world){
-			$worldManager = $world->getWeatherManager();
+			$weatherManager = $world->getWeatherManager();
 			if ($this->currentWeather === "clear"){
-			  $weatherManager->setClear;
+			  $weatherManager->setClear();
 			} elseif ($this->currentWeather === "rain"){
-			  $weatherManager->setRain;
+			  $weatherManager->setRain();
 			} elseif ($this->currentWeather === "thunder"){
-			  $weatherManager->setThunder;
+			  $weatherManager->setThunder();
 			}
 		  }
 		}
