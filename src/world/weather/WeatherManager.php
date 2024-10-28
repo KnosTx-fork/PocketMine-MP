@@ -23,37 +23,58 @@ declare(strict_types=1);
 
 namespace pocketmine\world\weather;
 
+use pocketmine\event\Listener;
+use pocketmine\event\world\WeatherChangeEvent;
+use pocketmine\network\mcpe\protocol\LevelEventPacket;
+use pocketmine\network\mcpe\protocol\types\LevelEventType;
+use pocketmine\world\sound\ThunderSound;
 use pocketmine\world\World;
+use function mt_rand;
 
-class WeatherManager {
-	private string $currentWeather = "clear";
+class WeatherManager implements Listener {
+	private WeatherType $currentWeather;
 	private World $world;
 
 	public function __construct(World $world) {
 		$this->world = $world;
+		$this->currentWeather = WeatherType::CLEAR;
 	}
 
-	public function setClear() : void {
-		$this->currentWeather = "clear";
+	public function setWeather(WeatherType $type) : void {
+		if ($this->currentWeather !== $type) {
+			$this->currentWeather = $type;
+			$event = new WeatherChangeEvent($this->world, $this->currentWeather);
+			$this->world->getServer()->getPluginManager()->callEvent($event);
+
+			switch ($type) {
+				case WeatherType::CLEAR:
+					$this->sendWeatherEvent(LevelEventType::STOP_RAIN);
+					break;
+				case WeatherType::RAIN:
+					$this->sendWeatherEvent(LevelEventType::START_RAIN);
+					break;
+				case WeatherType::THUNDER:
+					$this->sendWeatherEvent(LevelEventType::START_RAIN);
+					$this->playThunderSound();
+					break;
+			}
+		}
 	}
 
-	public function setRain() : void {
-		$this->currentWeather = "rain";
-	}
-
-	public function setThunder() : void {
-		$this->currentWeather = "thunder";
-	}
-
-	public function getCurrentWeather() : string {
+	public function getWeather() : WeatherType {
 		return $this->currentWeather;
 	}
 
-	public function updateWeather() : void {
-		// NOOP
+	private function playThunderSound() : void {
+		if (mt_rand(0, 2) === 0) {  // Thunder occasionally
+			$this->world->broadcastSound(new ThunderSound(), $this->world->getPlayers());
+		}
 	}
 
-	public function getWorld() : World{
-		return $this->world;
+	private function sendWeatherEvent(int $eventType) : void {
+		$packet = new LevelEventPacket();
+		$packet->evid = $eventType;
+		$packet->data = 0;
+		$this->world->broadcastPacketToViewers($packet);
 	}
 }

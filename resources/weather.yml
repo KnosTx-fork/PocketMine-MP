@@ -1,0 +1,3 @@
+weather:
+  enable_cycle: true
+  thunder_frequency: 15

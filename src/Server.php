@@ -58,8 +58,10 @@ use pocketmine\network\mcpe\encryption\EncryptionContext;
 use pocketmine\network\mcpe\EntityEventBroadcaster;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\PacketBroadcaster;
+use pocketmine\network\mcpe\protocol\LevelSoundEventAcket;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\network\mcpe\protocol\types\CompressionAlgorithm;
+use pocketmine\network\mcpe\protocol\types\LevelSoundEvent;
 use pocketmine\network\mcpe\raklib\RakLibInterface;
 use pocketmine\network\mcpe\StandardEntityEventBroadcaster;
 use pocketmine\network\mcpe\StandardPacketBroadcaster;
@@ -69,6 +71,7 @@ use pocketmine\network\query\DedicatedQueryNetworkInterface;
 use pocketmine\network\query\QueryHandler;
 use pocketmine\network\query\QueryInfo;
 use pocketmine\network\upnp\UPnPNetworkInterface;
+use pocketmine\math\Vector3;
 use pocketmine\permission\BanList;
 use pocketmine\permission\DefaultPermissions;
 use pocketmine\player\DatFilePlayerDataProvider;
@@ -304,8 +307,10 @@ class Server{
 	 */
 	private array $broadcastSubscribers = [];
 
-	private int $weatherDuration = 0;
-	private WeatherType $currentWeather;
+  private string $configPath;
+	private bool $enableWeatherCycle;
+	private int $thunderFrequency;
+	private int $weatherDuration;
 
 	public function getName() : string{
 		return VersionInfo::NAME;
@@ -1011,6 +1016,25 @@ class Server{
 			$this->worldManager->setAutoSave($this->configGroup->getConfigBool(ServerProperties::AUTO_SAVE, $this->worldManager->getAutoSave()));
 			$this->worldManager->setAutoSaveInterval($this->configGroup->getPropertyInt(Yml::TICKS_PER_AUTOSAVE, $this->worldManager->getAutoSaveInterval()));
 
+			$this->configPath = $this->getDataPath() . "weather.yml";
+			if (!file_exists($this->configPath)){
+			  $resource = $this->getResourcePath("weather.yml");
+			  if ($resource !== null){
+			    file_put_contents($this->configPath, stream_get_contents($resource));
+			    fclose($resource);
+			  }
+			}
+
+			$weatherConfig = new Config($this->configPath, Config::YAML,[
+			  "weather" => [
+			    "enable_cycle" => true,
+			    "thunder_frequency" => 15
+			    ]
+			  ]);
+			  
+			  $this->enableWeatherCycle = $weatherConfig->getNested("weather.enable_cycle", true);
+			  $this->thunderFrequency = $weatherConfig->getNested("weather.thunder_frequency", 15);
+
 			$this->updater = new UpdateChecker($this, $this->configGroup->getPropertyString(Yml::AUTO_UPDATER_HOST, "update.pmmp.io"));
 
 			$this->queryInfo = new QueryInfo($this);
@@ -1068,9 +1092,6 @@ class Server{
 				$this->console = new ConsoleReaderChildProcessDaemon($this->logger);
 			}
 
-			$this->currentWeather = WeatherType::CLEAR;
-			$this->setWeatherDuration();
-
 			$this->tickProcessor();
 			$this->forceShutdown();
 		}catch(\Throwable $e){
@@ -1099,6 +1120,9 @@ class Server{
 			}
 			return $generatorEntry->getGeneratorClass();
 		};
+
+		$this->currentWeather = WeatherType::CLEAR;
+		$this->setWeatherDuration();
 
 		$anyWorldFailedToLoad = false;
 
@@ -1887,26 +1911,24 @@ class Server{
 
 		if ($this->tickCounter >= 20){
 			$this->tickCounter = 0;
-			$this->weatherDuration--;
+			
+			if ($this->enableWeatherCycle){
+			  $this->weatherDuration--;
 
 			if ($this->weatherDuration <= 0){
 				$this->toggleWeather();
 				$this->setWeatherDuration();
 			}
 			foreach ($this->getWorldManager()->getWorlds() as $world){
-				$weatherManager = $world->getWeatherManager();
-				switch ($this->currentWeather){
-					case WeatherType::CLEAR:
-					$weatherManager->setClear();
-					break;
-					case WeatherType::RAIN:
-					$weatherManager->setRain();
-					break;
-					case WeatherType::THUNDER:
-					$weatherManager->setThunder();
-					break;
-				}
+			  $weatherManager = $world->getWeatherManager();
+			  $weatherManager->setWeather($this->currentWeather);
 			}
+			$this->thunderCounter++;
+			if ($this->currentWeather == weatherType::THUNDER && $this->thunderCounter >= $this->thunderFrequency){
+			  $this->playThunderSound();
+			  $this->thunderCounter = 0;
+			}
+		}
 		}
 	}
 
@@ -1920,4 +1942,14 @@ class Server{
 			default => WeatherType::CLEAR,
 		};
 	}
+
+	public function playThunderSound(Vector3 $position) : void {
+        $pk = new LevelSoundEventPacket();
+        $pk->sound = LevelSoundEvent::THUNDER;
+        $pk->position = $position;
+        $pk->extraData = 0;
+        $pk->disableRelativeVolume = false;
+
+        $this->world->broadcastPacketToViewers($position, $pk);
+    }
 }
